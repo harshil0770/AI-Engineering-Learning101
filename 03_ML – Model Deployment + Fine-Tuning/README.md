@@ -2,15 +2,7 @@
 
 Model Deployment and Fine-Tuning represent the final stages of the Machine Learning lifecycle. Training a high-performing model inside a Jupyter Notebook is only the first step; transitioning that model into a production-ready, scalable environment allows business applications and end-users to consume real-time predictions.
 
-```mermaid
-flowchart LR
-    A[Raw Data] --> B[Preprocessing & Feature Engineering]
-    B --> C[Model Training & Hyperparameter Tuning]
-    C --> D[Model Serialization .joblib/.pkl]
-    D --> E[API Layer FastAPI / Flask]
-    E --> F[Containerization Docker]
-    F --> G[Cloud Deployment AWS / Azure / GCP]
-```
+![Machine Learning Deployment Lifecycle](images/ml_deployment_lifecycle.png)
 
 ---
 
@@ -25,10 +17,6 @@ flowchart LR
 
 ### 2. Hyperparameter Search Strategies
 
-```mermaid
-grid
-```
-
 | Strategy | Description | Pros | Cons |
 | :--- | :--- | :--- | :--- |
 | **GridSearchCV** | Exhaustive search over a manually specified grid of hyperparameter values. Evaluates every permutation. | Guaranteed to find the optimal combination within the defined grid. | Computationally expensive and slow for large hyperparameter spaces. |
@@ -40,14 +28,7 @@ grid
 
 To prevent data leakage and overfitting to a single train-test split, **$K$-Fold Cross-Validation** partitions the dataset into $K$ equal-sized subsets (folds). The model is trained on $K-1$ folds and validated on the remaining fold, repeating this process $K$ times.
 
-```mermaid
-flowchart TD
-    subgraph K-Fold Cross Validation
-        F1[Fold 1: Validation] --- F2[Fold 2: Train] --- F3[Fold 3: Train] --- F4[Fold 4: Train] --- F5[Fold 5: Train]
-        F6[Fold 1: Train] --- F7[Fold 2: Validation] --- F8[Fold 3: Train] --- F9[Fold 4: Train] --- F10[Fold 5: Train]
-        F11[Fold 1: Train] --- F12[Fold 2: Train] --- F13[Fold 3: Validation] --- F14[Fold 4: Train] --- F15[Fold 5: Train]
-    end
-```
+![5-Fold Cross Validation Overview](images/kfold_cross_validation.png)
 
 The final performance metric is calculated as the mean score across all $K$ iterations, providing a realistic estimate of out-of-sample performance.
 
@@ -134,18 +115,7 @@ print(f"Loaded Model Prediction: {prediction[0]}")
 
 To allow external client applications (web frontends, mobile apps, or third-party services) to consume model predictions, the model must be exposed behind an **Application Programming Interface (API)**.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Client as Client App (Web / Mobile)
-    participant API as FastAPI / Flask Server
-    participant Model as ML Model (.joblib)
-
-    Client->>API: HTTP POST /predict (JSON Payload)
-    API->>Model: Extract features & run predict(X)
-    Model-->>API: Return prediction array [1]
-    API-->>Client: HTTP 200 OK (JSON Response)
-```
+![API Client-Server Model Inference Flow](images/api_inference_architecture.png)
 
 ### Framework Comparison
 
@@ -239,12 +209,7 @@ The **"It works on my machine"** problem occurs when local development environme
 
 **Docker** solves this by packaging the code, model file (`.joblib`), Python runtime, and exact package dependencies into an isolated, reproducible container image.
 
-```mermaid
-flowchart TD
-    A[Dockerfile] -->|docker build| B[Docker Image]
-    B -->|docker run| C[Docker Container running FastAPI]
-    C --> D[Deploy to Cloud AWS / Azure / GCP]
-```
+![Modern ML Model Containerization with Docker](images/docker_containerization_pipeline.png)
 
 ### Production `Dockerfile` Example
 
@@ -287,27 +252,15 @@ docker run -d -p 8000:8000 --name ml_api_container ml-inference-api:v1
 
 ### 1. Cloud Infrastructure Service Models
 
-```mermaid
-flowchart LR
-    subgraph Cloud Deployment Models
-        IaaS[IaaS: AWS EC2 / Azure VM<br/>Full OS control, manual setup]
-        PaaS[PaaS: AWS Elastic Beanstalk / App Engine<br/>Automated server management]
-        Serverless[Serverless: AWS Lambda / Cloud Functions<br/>Event-driven, pay-per-request]
-    end
-```
+| Model | Examples | Description |
+| :--- | :--- | :--- |
+| **IaaS** | AWS EC2, Azure VM | Full OS control; manual container installation and scaling. |
+| **PaaS** | AWS Elastic Beanstalk, Heroku | Automated platform hosting without managing underlying infrastructure. |
+| **Serverless** | AWS Lambda, Google Cloud Functions | Event-driven execution; scales automatically per API request. |
 
 ### 2. End-to-End Automated ML Pipelines
 
 In enterprise production environments, ML training, validation, containerization, and deployment are orchestrated automatically using pipeline managers (e.g., `scikit-learn` Pipelines, MLflow, Apache Airflow).
-
-```mermaid
-flowchart LR
-    Data[Data Ingestion] --> Prep[Preprocessing Pipeline]
-    Prep --> Tune[GridSearch / CV Tuning]
-    Tune --> Save[Joblib Serialization]
-    Save --> Build[Docker Build & Push]
-    Build --> Deploy[Cloud API Deployment]
-```
 
 ---
 
